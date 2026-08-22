@@ -29,3 +29,21 @@ class EditorProtocolTest(unittest.TestCase):
                 {"op": "finalize"},
                 {"op": "append", "text": "not done"},
             ]})
+
+    def test_seeded_buffer_requires_a_real_revision_when_requested(self) -> None:
+        with self.assertRaisesRegex(EditProtocolError, "must perform a revision"):
+            apply_edit_document(
+                {"operations": [{"op": "finalize"}]},
+                initial_buffer="Draft text.",
+                minimum_revision_operations=1,
+            )
+        result, edits = apply_edit_document(
+            {"operations": [
+                {"op": "replace", "old": "Draft", "new": "Final"},
+                {"op": "finalize"},
+            ]},
+            initial_buffer="Draft text.",
+            minimum_revision_operations=1,
+        )
+        self.assertEqual(result, "Final text.")
+        self.assertEqual(edits, 1)

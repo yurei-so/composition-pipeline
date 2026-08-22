@@ -21,6 +21,7 @@ MAX_AXIS_VALUES = 64
 MAX_TRIALS = 10_000
 MAX_STRING_BYTES = 4_000
 MAX_PRIVATE_RESULT_BYTES = 256 * 1024
+MAX_PRIVATE_DOCUMENT_BYTES = 10 * 1024 * 1024
 
 
 class CampaignError(ValueError):
@@ -159,6 +160,31 @@ def _write_checkpoint(path: Path, value: Mapping[str, Any]) -> None:
         with os.fdopen(descriptor, "w") as handle:
             json.dump(value, handle, sort_keys=True, separators=(",", ":"))
             handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def write_private_json(path: Path, value: Mapping[str, Any]) -> None:
+    """Atomically write one bounded owner-only campaign artifact."""
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise CampaignError("private campaign artifact is unsafe")
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    os.chmod(path.parent, 0o700)
+    try:
+        encoded = _canonical(value)
+    except (TypeError, ValueError) as error:
+        raise CampaignError("private campaign artifact must be strict JSON") from error
+    if len(encoded) > MAX_PRIVATE_DOCUMENT_BYTES:
+        raise CampaignError("private campaign artifact exceeds its byte limit")
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    descriptor = os.open(temporary, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(encoded + b"\n")
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary, path)

@@ -19,6 +19,9 @@ def generate(
     model: str,
     prompt: str,
     output_format: dict[str, Any] | None = None,
+    temperature: float = 0,
+    seed: int = 20260822,
+    num_predict: int = 768,
     timeout_seconds: int = 180,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
@@ -27,9 +30,9 @@ def generate(
         "stream": False,
         "think": False,
         "options": {
-            "temperature": 0,
-            "seed": 20260822,
-            "num_predict": 768,
+            "temperature": temperature,
+            "seed": seed,
+            "num_predict": num_predict,
         },
     }
     if output_format is not None:
