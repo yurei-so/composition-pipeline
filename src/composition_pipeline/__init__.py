@@ -1,3 +1,5 @@
 """Composition Pipeline experimental package."""
 
-__all__: list[str] = []
+from .editor import EditProtocolError, apply_edit_document
+
+__all__ = ["EditProtocolError", "apply_edit_document"]
