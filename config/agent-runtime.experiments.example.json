@@ -1,0 +1,18 @@
+{
+  "format": "agent-runtime.experiment-definitions",
+  "version": 1,
+  "definitions": [
+    {
+      "id": "composition-pipeline.contract-smoke",
+      "display_name": "Composition Pipeline contract smoke",
+      "description": "Verify the fixed Composition Pipeline experiment entrypoint through Agent Runtime.",
+      "repository_root": "/home/USER/github/composition-pipeline",
+      "executable": "/home/USER/github/composition-pipeline/scripts/run-experiment",
+      "args": [
+        "contract_smoke"
+      ],
+      "environment": {},
+      "timeout_seconds": 30
+    }
+  ]
+}
