@@ -25,3 +25,26 @@ deployment account, and merge its definition into Agent Runtime's managed
 experiment definition file. The checked-in `contract_smoke` entry is CPU-only
 and exists solely to verify admission and execution wiring; real composition
 experiments may use the accelerator only while Agent Runtime holds their lease.
+
+## Repository-local campaigns
+
+`composition_pipeline.campaign` expands a committed JSON matrix into stable,
+content-addressed trials and executes them sequentially inside one approved
+experiment process. A campaign manifest fixes its axes, repetitions, retry
+limit, total trial ceiling, and early-stop rules before intake. It cannot add
+commands or extend its budget while running.
+
+The caller must provide a fixed private state directory in the Agent Runtime
+definition. Checkpoints are owner-only, written atomically after each terminal
+trial, and bound to the complete manifest digest. Restarting the same frozen
+campaign skips completed trial identities; changing the manifest requires a new
+state directory and approval revision.
+
+Only flat scalar metrics and opaque trial identities appear in the public
+campaign summary. Parameters and trial results remain in the private checkpoint
+for later repository-owned aggregation or blinded review. Trial execution is
+strictly sequential. The campaign engine does not acquire leases, start worker
+processes, or provide an arbitrary driver interface.
+
+First-class campaign scheduling in roostd is intentionally deferred. Until
+then, roostd and Agent Runtime see one bounded, non-preemptive experiment lease.

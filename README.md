@@ -2,8 +2,9 @@
 
 Experimental middleware for model-directed composition, revision, and finalization.
 
-This repository currently contains only the project scaffold. The composition
-protocol and experiment design will be developed separately.
+The repository contains bounded composition experiments and reusable campaign
+infrastructure. Campaigns expand committed matrices into sequential trials with
+manifest-bound private checkpoints; they do not schedule accelerator work.
 
 ## Repository shape
 
