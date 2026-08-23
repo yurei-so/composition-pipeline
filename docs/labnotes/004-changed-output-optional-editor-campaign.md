@@ -63,18 +63,36 @@ self-matches the final output to the exact pre-editor candidate and yields the
 expected 20/20 correspondence. The diagnostic run is preserved but must not be
 used for inference.
 
-## Blinded review status
+## Blinded review and duplicate audit
 
-A fresh owner-only review session is ready at 0/20. Judgments are append-only,
-the candidate order is deterministically counterbalanced, and treatment labels
-and aggregate preferences remain reveal-gated until all 20 judgments are
-durably committed. The 100 automatic ties are excluded only from the manual UI,
-not from the eventual all-assignment result.
+The owner completed all 20 locked judgments on 2026-08-23. The raw manual
+aggregate was 10 direct-rewrite preferences, 10 optional-editor preferences,
+and no selected ties. Restoring the 100 automatic ties gives an all-assignment
+aggregate of 10 direct, 10 optional, and 100 ties.
 
-## Pending interpretation
+A post-review content-hash audit found that the 20 manual items contained only
+two unique unordered answer sets, each repeated ten times. All ten repetitions
+in one task/style cell were byte-identical after normalization, as were all ten
+in the other cell. Temperature-zero greedy decoding therefore collapsed the
+seeded repetition axis and created pseudoreplication.
 
-After completion, report the human-review preference among changed outputs and
-the overall preference across all 120 assignments after restoring the 100
-automatic ties. Interpret both alongside intervention rate, protocol failures,
-and compute cost. Do not promote optional editor access from the conditional
-subset alone.
+| Unique task/style cell | Direct preferences | Optional preferences |
+| --- | ---: | ---: |
+| `checkpoint-clarity` / `concise` | 8 | 2 |
+| `status-note` / `preservation_first` | 2 | 8 |
+
+The repeated judgments provide a limited intra-rater consistency signal, not
+twenty independent quality comparisons. At the unique-pair level, one case
+favored each method. Candidate text and pair-level mappings remain private.
+
+## Disposition
+
+- Do not use the 10/10 raw aggregate as evidence of equal arm quality.
+- Treat Labnote 004 as a diagnostic demonstration of automatic-tie filtering,
+  self-matching, and deterministic repetition collapse.
+- Deduplicate normalized unordered answer pairs before future human intake and
+  preserve multiplicity only as telemetry.
+- Increase statistical breadth primarily with distinct tasks. If repeated
+  stochastic samples are desired, freeze a modest nonzero temperature, unique
+  seeds, and a pre-review uniqueness audit.
+- Do not promote or fine-tune from this campaign.

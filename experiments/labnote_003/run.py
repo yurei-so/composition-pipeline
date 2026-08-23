@@ -72,10 +72,14 @@ Candidate buffer:
 {candidate}"""
 
 
-def _base_generation(case: dict[str, str], style: str, model: str, base_url: str, seed: int) -> dict[str, Any]:
+def _base_generation(
+    case: dict[str, str], style: str, model: str, base_url: str, seed: int,
+    temperature: float = 0,
+) -> dict[str, Any]:
     return generate(
         base_url=base_url, model=model,
         prompt=_direct_prompt(case["task"], case["draft"], style), seed=seed,
+        temperature=temperature,
     )
 
 
@@ -99,14 +103,14 @@ def _metric_record(
 
 def execute_trial(
     trial: Trial, *, cases: dict[str, dict[str, str]], model: str, base_url: str,
-    base_seed: int = 20260823,
+    base_seed: int = 20260823, temperature: float = 0,
 ) -> dict[str, Any]:
     arm = str(trial.parameters["arm"])
     case_id = str(trial.parameters["case_id"])
     style = str(trial.parameters["prompt_style"])
     case = cases[case_id]
     seed = base_seed + trial.repetition
-    base = _base_generation(case, style, model, base_url, seed)
+    base = _base_generation(case, style, model, base_url, seed, temperature)
     candidate = base["text"].strip()
     if not candidate:
         raise ValueError("empty direct rewrite")
@@ -127,7 +131,7 @@ def execute_trial(
     inspection = generate(
         base_url=base_url, model=model,
         prompt=_optional_editor_prompt(case["task"], candidate, style),
-        output_format=EDIT_SCHEMA, seed=seed,
+        output_format=EDIT_SCHEMA, seed=seed, temperature=temperature,
     )
     final_text: str | None = None
     operations: list[dict[str, Any]] | None = None
