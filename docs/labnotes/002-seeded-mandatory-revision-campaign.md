@@ -57,6 +57,25 @@ similarity suggests that constrained revision preserved more source material,
 but whether that preservation was appropriate must be decided through blinded
 human scoring.
 
+## Blinded human review result
+
+The owner completed all 22 locked judgments on 2026-08-23. The reveal gate
+opened only after the final judgment was durably committed against the original
+bundle digest.
+
+| Preferred arm | Pairs | Share of all pairs |
+| --- | ---: | ---: |
+| Direct rewrite | 13 | 59.1% |
+| Schema revision | 6 | 27.3% |
+| Tie | 3 | 13.6% |
+
+Among the 19 non-ties, direct rewrite was preferred in 68.4% of comparisons.
+An exact two-sided binomial test against equal preference gives `p = 0.167`, so
+this small review does not establish a statistically decisive arm advantage.
+No secondary-dimension scores were collected. Candidate text, pair-level
+judgments, and treatment assignments remain in owner-only private state and are
+not reproduced here.
+
 ## Disposition
 
 - Do not fine-tune.
@@ -64,9 +83,10 @@ human scoring.
   desired 95% protocol-success threshold.
 - Investigate the narrow preservation-first/finalization interaction before
   expanding the corpus.
-- Build a sanitized blinded-review workflow that keeps arm identity hidden
-  until scores are committed.
-- Score the 22 existing pairs for instruction adherence, correctness, concision,
-  voice preservation, and unintended changes.
-- Use those judgments—not draft similarity alone—to select the protocol for a
-  broader confirmation campaign.
+- The sanitized blinded-review workflow and all 22 judgments are complete.
+- Do not select schema revision as the default composition protocol from this
+  campaign. Direct rewrite led numerically, but the sample is not decisive.
+- Before a broader confirmation campaign, repair the preservation-first
+  finalization failure and require the planned secondary-dimension scores so a
+  future review can distinguish overall preference from adherence, correctness,
+  concision, voice preservation, and unintended changes.
