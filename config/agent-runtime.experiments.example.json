@@ -61,6 +61,24 @@
       ],
       "environment": {},
       "timeout_seconds": 1800
+    },
+    {
+      "id": "composition-pipeline.labnote-003",
+      "display_name": "Composition Pipeline labnote 003 campaign",
+      "description": "Compare direct rewrites with an optional editor inspection pass where zero edits are valid.",
+      "repository_root": "/home/USER/github/composition-pipeline",
+      "executable": "/home/USER/github/composition-pipeline/scripts/run-experiment",
+      "args": [
+        "labnote_003",
+        "--state-dir",
+        "/home/USER/.local/state/composition-pipeline/labnote-003",
+        "--model",
+        "qwen3:8b",
+        "--ollama-url",
+        "http://127.0.0.1:11434"
+      ],
+      "environment": {},
+      "timeout_seconds": 1800
     }
   ]
 }
