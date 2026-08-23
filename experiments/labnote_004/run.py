@@ -31,24 +31,30 @@ def write_changed_review_bundle(
     cases: dict[str, dict[str, str]], records: dict[str, dict[str, Any]],
     trials: tuple[Trial, ...],
 ) -> dict[str, Any]:
-    grouped: dict[tuple[str, str, int], dict[str, str]] = {}
+    grouped: dict[tuple[str, str, int], dict[str, dict[str, Any]]] = {}
     for trial in trials:
         record = records.get(trial.id)
         if not record or record["status"] != "completed":
             continue
-        final_text = record.get("private_result", {}).get("final_text")
+        private_result = record.get("private_result", {})
+        final_text = private_result.get("final_text")
         if not isinstance(final_text, str) or not final_text:
             continue
         key = (str(trial.parameters["case_id"]), str(trial.parameters["prompt_style"]), trial.repetition)
-        grouped.setdefault(key, {})[str(trial.parameters["arm"])] = final_text
+        grouped.setdefault(key, {})[str(trial.parameters["arm"])] = private_result
 
     pairs, reveal = [], []
     matched_pairs = automatic_ties = 0
-    for (case_id, style, repetition), outputs in sorted(grouped.items()):
-        if set(outputs) != {"direct_rewrite", "optional_editor"}:
+    for (case_id, style, repetition), records_by_arm in sorted(grouped.items()):
+        if set(records_by_arm) != {"direct_rewrite", "optional_editor"}:
+            continue
+        treatment = records_by_arm["optional_editor"]
+        baseline = treatment.get("initial_candidate")
+        final_text = treatment.get("final_text")
+        if not isinstance(baseline, str) or not baseline or not isinstance(final_text, str) or not final_text:
             continue
         matched_pairs += 1
-        if normalize_output(outputs["direct_rewrite"]) == normalize_output(outputs["optional_editor"]):
+        if normalize_output(baseline) == normalize_output(final_text):
             automatic_ties += 1
             continue
         pair_id = hashlib.sha256(
@@ -63,8 +69,8 @@ def write_changed_review_bundle(
         pairs.append({
             "pair_id": pair_id, "case_id": case_id, "prompt_style": style,
             "repetition": repetition, "task": case["task"], "draft": case["draft"],
-            "candidate_a": outputs[label_to_arm["A"]],
-            "candidate_b": outputs[label_to_arm["B"]],
+            "candidate_a": baseline if label_to_arm["A"] == "direct_rewrite" else final_text,
+            "candidate_b": baseline if label_to_arm["B"] == "direct_rewrite" else final_text,
             "criteria": ["clarity", "fidelity", "concision", "naturalness"],
         })
         reveal.append({

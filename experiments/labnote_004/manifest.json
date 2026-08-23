@@ -13,7 +13,7 @@
       "replacement-tradeoff"
     ],
     "prompt_style": ["concise", "preservation_first"],
-    "protocol_revision": ["changed-output-review-v1"]
+    "protocol_revision": ["self-matched-changed-output-review-v2"]
   },
   "repetitions": 10,
   "limits": {

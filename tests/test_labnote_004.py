@@ -59,6 +59,25 @@ class Labnote004Test(unittest.TestCase):
             self.assertNotIn("optional_editor", json.dumps(bundle))
             self.assertNotIn("clean direct rewrite", json.dumps(key).lower())
 
+    def test_independent_baseline_drift_does_not_create_review_pairs(self) -> None:
+        base_calls = 0
+
+        def generated(**kwargs):
+            nonlocal base_calls
+            if kwargs.get("output_format") is not None:
+                text = json.dumps({"operations": [{"op": "finalize"}]})
+            else:
+                base_calls += 1
+                text = "First baseline." if base_calls <= 120 else "Drifted baseline."
+            return {"text": text, "eval_count": 10, "prompt_eval_count": 20, "elapsed_seconds": 0.1}
+
+        with tempfile.TemporaryDirectory() as temporary:
+            state = Path(temporary) / "state"
+            with patch.object(LABNOTE.BASE, "generate", side_effect=generated):
+                result = LABNOTE.run_labnote(state_directory=state, model="test", base_url="http://127.0.0.1")
+            self.assertEqual(result["review"]["automatic_tie_count"], 120)
+            self.assertEqual(result["review"]["human_review_pair_count"], 0)
+
     def test_invalid_editor_fallback_is_an_automatic_tie(self) -> None:
         def generated(**kwargs):
             text = "not json" if kwargs.get("output_format") is not None else "A clean direct rewrite."
