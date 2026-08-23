@@ -48,18 +48,49 @@ created survivor bias. It is preserved as diagnostic evidence but is not an
 inferential campaign. The authoritative rerun uses the frozen
 `transactional-fallback-v1` protocol revision.
 
-## Blinded review status
+## Blinded human review result
 
-A fresh owner-only review session has been prepared with deterministic
-counterbalancing and append-only judgments. It begins at 0/24. Treatment labels
-and aggregate results remain unavailable until all 24 judgments are durably
-committed. Human review is intentionally not supervised by the experiment
-runner.
+The owner completed all 24 locked judgments on 2026-08-23. The reveal gate
+opened only after the final judgment was durably committed against the original
+bundle digest.
 
-## Pending interpretation
+| Preferred arm | Pairs | Share of all pairs |
+| --- | ---: | ---: |
+| Direct rewrite | 0 | 0% |
+| Optional editor access | 2 | 8.3% |
+| Tie | 22 | 91.7% |
 
-After the reveal gate opens, evaluate overall preference, voluntary edit rate,
-preference conditional on editing or leaving unchanged, cost, and protocol
-failures. Do not treat mechanical success or fallback behavior as evidence of
-output quality, and do not rescue the hypothesis if the blinded result is
-negative.
+Both non-ties preferred optional editor access, but an exact two-sided binomial
+test on only two non-ties gives `p = 0.5`. This is not evidence of an arm-level
+quality advantage. Both preferences occurred among the four voluntarily edited
+cases; the other two edited cases tied. All eight valid unchanged decisions and
+all twelve transactional fallbacks tied. No secondary-dimension scores were
+recorded.
+
+The treatment voluntarily edited 4/12 protocol-valid cases (33.3%), or 4/24 of
+all treatment assignments (16.7%). Eight valid cases finalized unchanged and
+twelve invalid editor responses used the frozen unchanged fallback. The valid
+edits contained six replacements and two deletions in aggregate.
+
+| Arm | Mean generated tokens | Mean prompt tokens | Mean latency | Generations |
+| --- | ---: | ---: | ---: | ---: |
+| Direct rewrite | 33.75 | 91.00 | 0.593 s | 1 |
+| Optional editor access | 98.75 | 319.75 | 1.584 s | 2 |
+
+Optional access therefore used about 2.9 times the generated tokens, 3.5 times
+the prompt tokens, and 2.7 times the latency of direct rewrite in this campaign.
+Candidate text, operations, pair-level judgments, and treatment assignments
+remain in owner-only private state and are not reproduced here.
+
+## Disposition
+
+- Do not fine-tune or promote optional editor access from this result.
+- Treat the overwhelming tie rate as the primary finding: matched deterministic
+  outputs were usually unchanged or judged equivalent.
+- The two optional-editor preferences are localized to one case/style cell and
+  are too few for a general conclusion.
+- Repair the 50% editor-protocol failure rate before another quality campaign.
+- If optional editing is revisited, target tasks with a measurable residual
+  defect after direct rewrite and require the planned secondary scores.
+- Preserve zero edits and transactional fallback as first-class outcomes; do
+  not filter either from future review.
