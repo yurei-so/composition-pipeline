@@ -58,19 +58,49 @@ replacements.
 The public blinded bundle digest is
 `3628dae66aeb0ed93fe4e7f575f1f6f6b4f3e42a3178534c6d00c6fe75057929`.
 
-## Blinded review status
+## Blinded human review result
 
-A fresh owner-only session is ready at 0/21. Candidate ordering is
-deterministically counterbalanced, judgments are append-only, and treatment
-labels and preferences remain reveal-gated until all 21 unique judgments are
-durably committed. The 92 automatic ties and seven removed duplicate changed
-trials remain part of the final frequency analysis but not separate review
-questions.
+The owner completed all 21 unique locked judgments on 2026-08-23. The reveal
+gate opened only after the final judgment was durably committed against the
+original bundle digest.
 
-## Pending interpretation
+| Preferred arm | Unique pairs | Share |
+| --- | ---: | ---: |
+| Direct rewrite | 11 | 52.4% |
+| Optional editor access | 10 | 47.6% |
+| Tie | 0 | 0% |
 
-Report preference among the 21 unique changed pairs without treating duplicate
-multiplicity as independent evidence. Separately report the all-assignment
-effect with 92 automatic ties and the observed intervention, duplicate,
-protocol-failure, latency, and token costs. Compare diversity against Labnote
-004, but do not promote optional editing from the conditional subset alone.
+An exact two-sided binomial test gives `p = 1.0`. The deduplicated conditional
+review therefore provides no evidence of a preference advantage for either
+arm.
+
+Restoring each unique changed pair's observed generation multiplicity gives a
+descriptive changed-trial frequency of 12 direct preferences and 16 optional
+preferences. Restoring the 92 automatic ties produces an all-assignment
+frequency of 12 direct, 16 optional, and 92 ties. These weighted counts describe
+the generated campaign; duplicate occurrences were not independently judged
+and must not be treated as independent preference evidence.
+
+## Cost
+
+| Arm | Mean generated tokens | Mean prompt tokens | Mean latency | Generations |
+| --- | ---: | ---: | ---: | ---: |
+| Direct rewrite | 33.72 | 91.00 | 0.614 s | 1 |
+| Optional editor access | 98.08 | 319.55 | 1.570 s | 2 |
+
+Optional access used about 2.9 times the generated tokens, 3.5 times the prompt
+tokens, and 2.6 times the latency. It also had a 39.2% protocol-failure rate.
+
+## Disposition
+
+- Do not promote or fine-tune optional editor access from this campaign.
+- Temperature 0.35 plus content-hash deduplication successfully improved review
+  diversity from 2 unique pairs in Labnote 004 to 21 in Labnote 005.
+- Among genuinely changed unique outputs, human preference was effectively
+  even; the extra editor pass did not justify its compute cost.
+- Preserve self-matching, automatic ties, pre-intake deduplication, and separate
+  unique versus multiplicity-weighted reporting as infrastructure.
+- A future campaign should expand genuinely distinct tasks and target known
+  residual defects after direct rewrite rather than repeat this same corpus.
+- Candidate text, pair-level judgments, hashes, and treatment mappings remain
+  in owner-only private state and are not reproduced here.
