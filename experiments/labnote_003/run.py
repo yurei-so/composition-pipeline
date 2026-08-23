@@ -148,10 +148,13 @@ def execute_trial(
         error = "invalid_json"
     except (EditProtocolError, KeyError, TypeError) as failure:
         error = str(failure)
+    if final_text is None:
+        final_text = candidate
+        finalize_behavior = "fallback_unchanged"
     return {
         "metrics": _metric_record(
             final_text=final_text, source_draft=case["draft"], generations=[base, inspection],
-            protocol_success=final_text is not None, editor_invoked=True,
+            protocol_success=error is None, editor_invoked=True,
             revision_count=revision_count,
         ),
         "arm": arm, "case_id": case_id, "prompt_style": style,
@@ -228,6 +231,10 @@ def _private_telemetry(records: dict[str, dict[str, Any]], trials: tuple[Trial, 
         and records[trial.id]["status"] == "completed"
     ]
     valid = [record for record in treatment if record["metrics"].get("protocol_success") is True]
+    fallback = [
+        record for record in treatment
+        if record["private_result"].get("finalize_behavior") == "fallback_unchanged"
+    ]
     edited = [record for record in valid if record["private_result"].get("finalize_behavior") == "edited"]
     operation_types = Counter(
         kind for record in valid for kind in (record["private_result"].get("operation_types") or [])
@@ -237,6 +244,7 @@ def _private_telemetry(records: dict[str, dict[str, Any]], trials: tuple[Trial, 
         "format": "composition-pipeline.optional-editor-telemetry", "version": 1,
         "treatment_completed": len(treatment), "treatment_valid": len(valid),
         "finalized_unchanged": len(valid) - len(edited), "voluntarily_edited": len(edited),
+        "transactional_fallback": len(fallback),
         "revision_operation_types": dict(sorted(operation_types.items())),
     }
 

@@ -8,6 +8,7 @@
   "temperature": 0,
   "num_predict": 768,
   "planned_trials": 48,
+  "protocol_revision": "transactional-fallback-v1",
   "arms": ["direct_rewrite", "optional_editor"],
   "prompt_styles": ["concise", "preservation_first"],
   "primary_measurements": [

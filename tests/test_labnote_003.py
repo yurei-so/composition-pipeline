@@ -69,6 +69,20 @@ class Labnote003Test(unittest.TestCase):
             self.assertEqual(telemetry["voluntarily_edited"], 24)
             self.assertEqual(telemetry["revision_operation_types"], {"replace": 24})
 
+    def test_invalid_optional_edit_falls_back_and_remains_reviewable(self) -> None:
+        def generated(**kwargs):
+            text = "not json" if kwargs.get("output_format") is not None else "A clean direct rewrite."
+            return {"text": text, "eval_count": 10, "prompt_eval_count": 20, "elapsed_seconds": 0.1}
+
+        with tempfile.TemporaryDirectory() as temporary:
+            state = Path(temporary) / "state"
+            with patch.object(LABNOTE, "generate", side_effect=generated):
+                result = LABNOTE.run_labnote(state_directory=state, model="test", base_url="http://127.0.0.1")
+            self.assertEqual(result["summary"]["optional_editor"]["protocol_success_rate"], 0)
+            self.assertEqual(result["blinded_review"]["pair_count"], 24)
+            telemetry = json.loads((state / "treatment-telemetry.json").read_text())
+            self.assertEqual(telemetry["transactional_fallback"], 24)
+
 
 if __name__ == "__main__":
     unittest.main()

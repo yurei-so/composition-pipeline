@@ -14,6 +14,12 @@ bounded virtual buffer and may either finalize unchanged or voluntarily apply
 validated editing operations before finalizing. Zero edits are a valid,
 first-class treatment outcome.
 
+The editor is transactional. If the inspection response is invalid or cannot be
+applied, the treatment returns the unchanged initial candidate, records a
+protocol failure, and remains eligible for blinded review. This prevents invalid
+tool use from destroying a usable response and prevents survivor bias from
+silently dropping treatment failures.
+
 Raw prompts, drafts, generated texts, operations, checkpoints, telemetry, and
 the reveal key remain private. Standard output contains only mechanical validity
 counts and an opaque review-bundle digest. Treatment telemetry is analyzed only
