@@ -99,12 +99,13 @@ def _metric_record(
 
 def execute_trial(
     trial: Trial, *, cases: dict[str, dict[str, str]], model: str, base_url: str,
+    base_seed: int = 20260823,
 ) -> dict[str, Any]:
     arm = str(trial.parameters["arm"])
     case_id = str(trial.parameters["case_id"])
     style = str(trial.parameters["prompt_style"])
     case = cases[case_id]
-    seed = 20260823 + trial.repetition
+    seed = base_seed + trial.repetition
     base = _base_generation(case, style, model, base_url, seed)
     candidate = base["text"].strip()
     if not candidate:

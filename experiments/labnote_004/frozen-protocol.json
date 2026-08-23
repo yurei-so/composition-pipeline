@@ -1,0 +1,22 @@
+{
+  "format": "composition-pipeline.frozen-protocol",
+  "version": 1,
+  "experiment_id": "labnote_004",
+  "title": "Changed-output optional editor campaign",
+  "model": "qwen3:8b",
+  "base_seed": 20260824,
+  "temperature": 0,
+  "num_predict": 768,
+  "planned_trials": 240,
+  "matched_pairs": 120,
+  "protocol_revision": "changed-output-review-v1",
+  "arms": ["direct_rewrite", "optional_editor"],
+  "prompt_styles": ["concise", "preservation_first"],
+  "review_inclusion": "Include a pair in blinded human review exactly when normalized final outputs differ. Count normalized-identical outputs as automatic ties in the all-assignment estimand.",
+  "normalization": "Normalize CRLF to LF, remove trailing horizontal whitespace per line, and remove leading and trailing whitespace from the full output.",
+  "estimands": [
+    "all_assignment_preference_with_automatic_ties",
+    "human_preference_conditional_on_changed_output"
+  ],
+  "decision_boundary": "Optional editing earns adoption only if changed outputs reliably improve blinded preference often enough to justify intervention frequency, protocol failures, latency, and token overhead. Automatic ties may not be discarded from the overall result."
+}
