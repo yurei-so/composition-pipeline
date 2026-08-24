@@ -56,3 +56,33 @@ boundary. Version 4 removes structured output from only that call: the model
 returns the repaired buffer directly, and the controller enforces nonempty and
 16,000-character bounds before applying one exact replacement. It uses another
 fresh state path and digest; v1-v3 remain preserved as invalid engineering runs.
+
+## Valid v4 result
+
+- Agent Runtime run: `f0b19d63-c1e3-4495-a09c-b27bee488b6f`
+- Repository revision: `c99911c`
+- Campaign digest: `3eab95852212330f60f5179c2978d982de5f844549a3dd10f4bedad95e1df98d`
+- Completed: 120/120 with zero failed trials, empty stderr, and clean lease release.
+- Diagnoses: 80 none, 28 redundancy, 10 tone mismatch, one omission, and
+  one instruction violation.
+- Repairs attempted: 40.
+- Changed and independently verified repairs: 33.
+- Unique verified unordered answer pairs: 11.
+- Duplicate verified occurrences excluded: 22.
+- Eligible task families: five.
+- Frozen intake requirement: 12 unique pairs across six task families.
+- Gate result: failed; zero pairs were released to human review.
+- Private review-bundle digest:
+  `c119293b711dcf5ab99d4ffe9bf3fa34f6555c9982f5dc527120fb736b5fc94a`.
+
+## Disposition
+
+The narrow repair mechanism is operationally viable: 33 repairs survived an
+independent defect/regression check with no campaign failures. The study did
+not earn human review, however, because the evidence concentrated in repeated
+redundancy and tone fixes and collapsed below both precommitted diversity
+thresholds after exact-pair deduplication. Do not lower the gate after seeing
+the result. A future campaign must introduce genuinely broader residual-defect
+opportunities rather than repeat or temperature-scale this corpus. Preserve
+the direct-buffer repair contract, independent verification, deduplication,
+and task-family coverage gate as reusable infrastructure.
