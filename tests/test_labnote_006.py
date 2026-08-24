@@ -62,10 +62,10 @@ class Labnote006Test(unittest.TestCase):
             if kwargs.get("output_format") == LABNOTE.DIAGNOSIS_SCHEMA:
                 text = json.dumps({"defect": "tone_mismatch", "evidence": "Bad.",
                                    "repair_instruction": "Use a calm tone."})
-            elif kwargs.get("output_format") == LABNOTE.REPAIR_SCHEMA:
-                text = json.dumps({"replacement": "Clear and calm."})
             elif kwargs.get("output_format") == LABNOTE.VERIFY_SCHEMA:
                 text = json.dumps({"defect_fixed": True, "material_regression": False})
+            elif "Repair exactly one diagnosed defect" in kwargs.get("prompt", ""):
+                text = "Clear and calm."
             else:
                 text = "Bad."
             return {"text": text, "eval_count": 3, "prompt_eval_count": 4, "elapsed_seconds": 0.01}

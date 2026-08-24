@@ -44,13 +44,6 @@ VERIFY_SCHEMA: dict[str, Any] = {
         "material_regression": {"type": "boolean"},
     },
 }
-REPAIR_SCHEMA: dict[str, Any] = {
-    "type": "object", "additionalProperties": False,
-    "required": ["replacement"],
-    "properties": {"replacement": {"type": "string", "minLength": 1, "maxLength": 16000}},
-}
-
-
 def normalize(text: str) -> str:
     return "\n".join(line.rstrip() for line in text.replace("\r", "").split("\n")).strip()
 
@@ -67,9 +60,9 @@ Task:\n{task}\n\nCandidate:\n{candidate}"""
 
 def _repair_prompt(task: str, candidate: str, defect: str, instruction: str) -> str:
     return f"""Repair exactly one diagnosed defect in a bounded virtual text buffer.
-Preserve everything not required by the repair. Return JSON only with one
-`replacement` string containing the complete repaired buffer. The controller
-will apply it as one exact whole-buffer replacement.
+Preserve everything not required by the repair. Return only the complete
+repaired buffer with no JSON, markdown fence, preface, or commentary. The
+controller will apply it as one exact whole-buffer replacement.
 
 Task:\n{task}\n\nDefect: {defect}\nRepair instruction: {instruction}
 
@@ -118,10 +111,12 @@ def execute_trial(trial: Trial, *, cases: dict[str, dict[str, str]], model: str,
 
     repair_call = generate(base_url=base_url, model=model,
         prompt=_repair_prompt(case["task"], baseline, defect, instruction),
-        output_format=REPAIR_SCHEMA, seed=seed + 20_000, temperature=0)
+        seed=seed + 20_000, temperature=0)
     generations.append(repair_call)
     try:
-        replacement = json.loads(repair_call["text"])["replacement"]
+        replacement = repair_call["text"].strip()
+        if not replacement or len(replacement) > 16_000:
+            raise ValueError("replacement buffer is outside its bounds")
         document = {"operations": [
             {"op": "replace", "old": baseline, "new": replacement},
             {"op": "finalize"},

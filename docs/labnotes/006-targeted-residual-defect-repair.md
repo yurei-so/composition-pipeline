@@ -29,7 +29,7 @@ owner-only state. Public output contains only aggregate campaign telemetry.
 
 ## Status
 
-Protocol v3 is frozen and awaiting its coordinated Agent Runtime / roostd run.
+Protocol v4 is frozen and awaiting its coordinated Agent Runtime / roostd run.
 
 The initial v1 execution completed 120/120 trials with no scheduler failures,
 but is invalid for scientific interpretation. It diagnosed 40 residual defects
@@ -47,3 +47,12 @@ No repair reached verification and no review opened, so v2 is also invalid for
 scientific interpretation. Version 3 keeps the same trial and review budgets
 but permits four bounded retries per trial and again uses a fresh state path and
 campaign digest.
+
+Version 3 reproduced the same seven deterministic failures after five attempts
+each. Mapping only public trial parameters showed that every failure occurred
+on a case that reached the replacement-generation call, while `none` diagnoses
+completed. The structured replacement schema itself was therefore the failing
+boundary. Version 4 removes structured output from only that call: the model
+returns the repaired buffer directly, and the controller enforces nonempty and
+16,000-character bounds before applying one exact replacement. It uses another
+fresh state path and digest; v1-v3 remain preserved as invalid engineering runs.
