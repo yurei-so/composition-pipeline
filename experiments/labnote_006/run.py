@@ -44,6 +44,11 @@ VERIFY_SCHEMA: dict[str, Any] = {
         "material_regression": {"type": "boolean"},
     },
 }
+REPAIR_SCHEMA: dict[str, Any] = {
+    "type": "object", "additionalProperties": False,
+    "required": ["replacement"],
+    "properties": {"replacement": {"type": "string", "minLength": 1, "maxLength": 16000}},
+}
 
 
 def normalize(text: str) -> str:
@@ -62,8 +67,9 @@ Task:\n{task}\n\nCandidate:\n{candidate}"""
 
 def _repair_prompt(task: str, candidate: str, defect: str, instruction: str) -> str:
     return f"""Repair exactly one diagnosed defect in a bounded virtual text buffer.
-Preserve everything not required by the repair. Return JSON only using exact
-append, replace, delete, and final finalize operations.
+Preserve everything not required by the repair. Return JSON only with one
+`replacement` string containing the complete repaired buffer. The controller
+will apply it as one exact whole-buffer replacement.
 
 Task:\n{task}\n\nDefect: {defect}\nRepair instruction: {instruction}
 
@@ -112,10 +118,14 @@ def execute_trial(trial: Trial, *, cases: dict[str, dict[str, str]], model: str,
 
     repair_call = generate(base_url=base_url, model=model,
         prompt=_repair_prompt(case["task"], baseline, defect, instruction),
-        output_format=BASE.EDIT_SCHEMA, seed=seed + 20_000, temperature=0)
+        output_format=REPAIR_SCHEMA, seed=seed + 20_000, temperature=0)
     generations.append(repair_call)
     try:
-        document = json.loads(repair_call["text"])
+        replacement = json.loads(repair_call["text"])["replacement"]
+        document = {"operations": [
+            {"op": "replace", "old": baseline, "new": replacement},
+            {"op": "finalize"},
+        ]}
         repaired, _ = apply_edit_document(document, initial_buffer=baseline,
             minimum_revision_operations=1, maximum_operations=16)
     except (json.JSONDecodeError, EditProtocolError, KeyError, TypeError) as error:

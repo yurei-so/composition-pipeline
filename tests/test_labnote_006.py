@@ -54,6 +54,26 @@ class Labnote006Test(unittest.TestCase):
         self.assertGreaterEqual(result["eligible_case_count"], 6)
         self.assertEqual(len(bundle["pairs"]), 24)
 
+    def test_targeted_repair_uses_one_exact_whole_buffer_replacement(self) -> None:
+        trial = load_campaign(ROOT / "experiments/labnote_006/manifest.json").trials[0]
+        cases = {str(trial.parameters["case_id"]): {"task": "Make it clear.", "draft": "Bad."}}
+        def generated(**kwargs):
+            if kwargs.get("output_format") == LABNOTE.DIAGNOSIS_SCHEMA:
+                text = json.dumps({"defect": "tone_mismatch", "evidence": "Bad.",
+                                   "repair_instruction": "Use a calm tone."})
+            elif kwargs.get("output_format") == LABNOTE.REPAIR_SCHEMA:
+                text = json.dumps({"replacement": "Clear and calm."})
+            elif kwargs.get("output_format") == LABNOTE.VERIFY_SCHEMA:
+                text = json.dumps({"defect_fixed": True, "material_regression": False})
+            else:
+                text = "Bad."
+            return {"text": text, "eval_count": 3, "prompt_eval_count": 4, "elapsed_seconds": 0.01}
+        with patch.object(LABNOTE, "generate", side_effect=generated), \
+                patch.object(LABNOTE.BASE, "generate", side_effect=generated):
+            result = LABNOTE.execute_trial(trial, cases=cases, model="test", base_url="local")
+        self.assertEqual(result["repaired"], "Clear and calm.")
+        self.assertTrue(result["metrics"]["verified_repair"])
+
 
 if __name__ == "__main__":
     unittest.main()

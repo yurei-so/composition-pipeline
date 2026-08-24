@@ -18,7 +18,8 @@ unrestricted optional editing showed no preference advantage in Labnote 005.
   violation, awkward structure, tone mismatch, ambiguity, redundancy, or none.
 - A diagnosis names one primary defect and anchors non-omission evidence to an
   exact candidate substring.
-- Repair uses bounded exact-buffer operations and must make at least one change.
+- Repair returns one bounded complete buffer which the controller applies as an
+  exact whole-buffer replacement, and it must make at least one change.
 - An independent pass must confirm the defect was fixed without regression.
 - Unchanged and duplicate pairs are excluded before review.
 - Human review opens only with 12 unique verified pairs across six task families.
@@ -28,4 +29,13 @@ owner-only state. Public output contains only aggregate campaign telemetry.
 
 ## Status
 
-Frozen implementation awaiting the coordinated Agent Runtime / roostd run.
+Protocol v2 is frozen and awaiting its coordinated Agent Runtime / roostd run.
+
+The initial v1 execution completed 120/120 trials with no scheduler failures,
+but is invalid for scientific interpretation. It diagnosed 40 residual defects
+and then rejected every repair document at the edit-protocol boundary (29
+missing finalization operations, 10 invalid delete shapes, and one invalid
+replace shape). No repair was applied and no review opened. Version 2 replaces
+the unnecessarily expressive edit document with one bounded complete buffer
+that the controller applies as an exact whole-buffer replacement. The v1 state
+remains preserved and v2 uses a fresh state directory and campaign digest.
