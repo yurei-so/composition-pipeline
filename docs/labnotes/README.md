@@ -8,3 +8,4 @@ inputs, measurements, results, limitations, and disposition here.
 - [Labnote 003: Optional editor-access campaign](003-optional-editor-access-campaign.md)
 - [Labnote 004: Changed-output optional editor campaign](004-changed-output-optional-editor-campaign.md)
 - [Labnote 005: Stochastic deduplicated optional editor campaign](005-stochastic-deduplicated-editor-campaign.md)
+- [Labnote 006: Targeted residual-defect repair](006-targeted-residual-defect-repair.md)
