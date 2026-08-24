@@ -19,6 +19,7 @@ class Labnote006Test(unittest.TestCase):
         spec = load_campaign(ROOT / "experiments/labnote_006/manifest.json")
         self.assertEqual(len(spec.trials), 120)
         self.assertEqual(len({trial.parameters["case_id"] for trial in spec.trials}), 12)
+        self.assertEqual(spec.retry_count, 4)
 
     def test_none_diagnosis_skips_repair_and_review(self) -> None:
         calls = 0

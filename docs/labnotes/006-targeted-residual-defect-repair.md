@@ -29,7 +29,7 @@ owner-only state. Public output contains only aggregate campaign telemetry.
 
 ## Status
 
-Protocol v2 is frozen and awaiting its coordinated Agent Runtime / roostd run.
+Protocol v3 is frozen and awaiting its coordinated Agent Runtime / roostd run.
 
 The initial v1 execution completed 120/120 trials with no scheduler failures,
 but is invalid for scientific interpretation. It diagnosed 40 residual defects
@@ -39,3 +39,11 @@ replace shape). No repair was applied and no review opened. Version 2 replaces
 the unnecessarily expressive edit document with one bounded complete buffer
 that the controller applies as an exact whole-buffer replacement. The v1 state
 remains preserved and v2 uses a fresh state directory and campaign digest.
+
+The v2 replacement then halted safely after 24 trials because seven transient
+`OllamaError` failures exceeded the precommitted 15% failure-rate ceiling.
+Ollama remained active with zero service restarts and its API stayed healthy.
+No repair reached verification and no review opened, so v2 is also invalid for
+scientific interpretation. Version 3 keeps the same trial and review budgets
+but permits four bounded retries per trial and again uses a fresh state path and
+campaign digest.

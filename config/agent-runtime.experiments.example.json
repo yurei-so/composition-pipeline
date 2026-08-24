@@ -125,7 +125,7 @@
       "args": [
         "labnote_006",
         "--state-dir",
-        "/home/USER/.local/state/composition-pipeline/labnote-006-v2",
+        "/home/USER/.local/state/composition-pipeline/labnote-006-v3",
         "--model",
         "qwen3:8b",
         "--ollama-url",
